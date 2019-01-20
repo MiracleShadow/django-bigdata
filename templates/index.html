@@ -7,6 +7,16 @@
         body {
             background: pink;
         }
+
+        .nav {
+            overflow: hidden;
+        }
+
+        .nav li {
+            float: left;
+            list-style: none;
+            margin: 0 20px;
+        }
     </style>
 </head>
 <body>
@@ -15,62 +25,16 @@
 这个是从模板中渲染的字符串
 <br>
 
-{{ person.username }}
-{{ persons.0 }}
-{#注意不可以使用 persons[0] #}
-
-{#{% if person.age < 18 %}#}
-{#    <p>您未满18岁，请退出</p>#}
-{#{% elif person.age >= 18 %}#}
-{#    <p>您已满18岁</p>#}
-{#{% endif %}#}
-
-{#{% if '张三' in persons %}#}
-{#    <p>张三到！</p>#}
-{#{% else %}#}
-{#    <p>张三呢？</p>#}
-{#{% endif %}#}
-
-{#{% if 1 is 1 %}#}
-{#    <p>1 is 1</p>#}
-{#{% endif %}#}
-
-<ul>
-    {% for key, value in person.items %}
-        <li>key: {{ key }}, value: {{ value }}</li>
-    {% empty %}
-        <li>没有人</li>
-    {% endfor %}
+<ul class="nav">
+    <li><a href="/">首页</a></li>
+    <li><a href="{% url 'front:book' %}">读书</a></li>
+    <li><a href="{% url 'front:movie' %}">电影</a></li>
+    <li><a href="{% url 'front:city' %}">同城</a></li>
+    <li><a href="{% url 'front:book_detail' book_id='1' category='1'%}">最火的一篇文章</a></li>
+    <li><a href="{% url 'front:login' %}?next=/">登陆</a></li>
 </ul>
-<table>
-    <thead>
-    <tr>
-        <td>序号</td>
-        <td>书名</td>
-        <td>作者</td>
-        <td>价格</td>
-    </tr>
-    </thead>
-    <tbody>
-    {% for book in books %}
-        {% if forloop.first %}
-            <tr style="background: red;">
-        {% elif forloop.last %}
-            <tr style="background: green;">
-        {% else %}
-            <tr>
-        {% endif %}
-            <td>{{ forloop.counter }}</td>
-            {# {{ forloop.counter0 }} 从0开始 #}
-            {# {{ forloop.revcounter }} 反向 #}
-            <td>{{ book.name }}</td>
-            <td>{{ book.author }}</td>
-            <td>{{ book.price }}</td>
-        </tr>
-    {% endfor %}
-
-    </tbody>
-</table>
-
+Hi!你好 {{ username }}
+<br>
+现在的时间是{{ today|date:"Y年n月j日 G:i:s" }}
 </body>
 </html>
