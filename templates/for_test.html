@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django中for函数示例</title>
+</head>
+<body>
+person信息
+<ul>
+    {% for key, value in person.items %}
+        <li>key: {{ key }}, value: {{ value }}</li>
+    {% empty %}
+        <li>没有人</li>
+    {% endfor %}
+</ul>
+books信息
+<table>
+    <thead>
+    <tr>
+        <td>序号</td>
+        <td>书名</td>
+        <td>作者</td>
+        <td>价格</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for book in books %}
+        {% if forloop.first %}
+            <tr style="background: red;">
+        {% elif forloop.last %}
+            <tr style="background: green;">
+        {% else %}
+            <tr>
+        {% endif %}
+            <td>{{ forloop.counter }}</td>
+            {# {{ forloop.counter0 }} 从0开始#}
+            {# {{ forloop.revcounter }} 反向#}
+            <td>{{ book.name }}</td>
+            <td>{{ book.author }}</td>
+            <td>{{ book.price }}</td>
+        </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+</body>
+</html>
