@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django中if函数示例</title>
+</head>
+<body>
+person.username={{ person.username }}
+<br>
+person.age={{ person.age }}
+<br>
+persons.0={{ persons.0 }}
+{#注意不可以使用 persons[0] #}
+{% if person.age < 18 %}
+    <p>您未满18岁，请退出</p>
+{% elif person.age >= 18 %}
+    <p>您已满18岁</p>
+{% endif %}
+
+{% if '张三' in persons %}
+    <p>张三到！</p>
+{% else %}
+    <p>张三呢？</p>
+{% endif %}
+
+{% if 1 is 1 %}
+    <p>1 is 1</p>
+{% endif %}
+</body>
+</html>
