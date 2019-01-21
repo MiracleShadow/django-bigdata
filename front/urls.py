@@ -20,4 +20,6 @@ urlpatterns = [
     path('add/', views.add_view),
     path('cut/', views.cut_view),
     path('date/', views.date_view),
+    path('company/', views.company, name='company'),
+    path('school/', views.school, name='school'),
 ]

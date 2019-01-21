@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'front',
+    'cms'
 ]
 
 MIDDLEWARE = [
@@ -64,6 +66,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+
+            # 如果不想每次在模版中加载静态文件都使用 load 加载 static 标签，那么可以
+            'builtins': ['django.templatetags.static']
+            # 以后后在模版中就可以直接使用 static 标签，而不用 手动的 load 了。
         },
     },
 ]
@@ -119,3 +125,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]

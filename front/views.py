@@ -129,3 +129,11 @@ def date_view(request):
         "today": datetime.now(),
     }
     return render(request, 'date.html', context=context)
+
+
+def company(request):
+    return render(request, 'company.html')
+
+
+def school(request):
+    return render(request, 'school.html')
