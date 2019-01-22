@@ -82,8 +82,18 @@ WSGI_APPLICATION = 'myFirstDjangoProject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # 数据库引擎
+        'ENGINE': 'django.db.backends.mysql',
+        # 数据库名
+        'NAME': 'testdb',
+        # 连接mysql数据库用户名
+        'USER': 'ms',
+        # 连接mysql数据库密码
+        'PASSWORD': '123456',
+        # mysql数据库主机地址
+        'HOST': '127.0.0.1',
+        # mysql数据库的端口号
+        'PORT': '3306'
     }
 }
 
