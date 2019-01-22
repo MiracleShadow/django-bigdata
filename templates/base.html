@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link REL="SHORTCUT ICON" HREF="{% static 'favicon.ico' %}"/>
+    <title>{% block title %} title {% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+</head>
+<body>
+<div class="w" id="header">恒晨商业大数据平台</div>
+<div class="a" id="bf">
+    <ul id="Menu" class="w">
+        <li><a href="/">首页</a></li>
+        <li><a href="{% url 'front:book' %}">读书</a></li>
+        <li><a href="{% url 'front:movie' %}">电影</a></li>
+        <li><a href="{% url 'front:city' %}">同城</a></li>
+        <li><a href="{% url 'front:company' %}">公司</a></li>
+        <li><a href="{% url 'front:school' %}">校园</a></li>
+        <li><a href="{% url 'front:book_detail' book_id='1' category='1' %}">最火的一篇文章</a></li>
+        <li><a href="{% url 'front:login' %}?next=/">登陆</a></li>
+    </ul>
+</div>
+<div class="w" id="content">
+    {% block content %}
+        content
+    {% endblock %}
+</div>
+<div id="footer">
+    <div class="w">
+        <div class="lf">
+            <a href="mailto:ac_zzh@qq.com">张祝恒</a>
+            <a href="http://www.miibeian.gov.cn" target="_blank" rel="nofollow noopener">皖ICP备18017580号-2</a>
+        </div>
+        <div class="rt">
+            <span class="Copyright">
+                <span class="Cr">&copy;</span>thbigdata.xyz<a href="http://www.thbigdata.xyz/">恒晨大数据管理可视化平台</a>
+            </span>
+        </div>
+    </div>
+</div>
+</body>
+</html>
