@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, reverse
 from django.template.loader import render_to_string
 from datetime import datetime
+from django.db import connection
 
 
 class Person(object):
@@ -12,13 +13,14 @@ class Person(object):
 
 def index(request):
     # ?username=xxx
+    connection_mysql_db(request)
     username = request.GET.get('username')
     context = {
         'username': username,
         "today": datetime.now()
     }
     if username:
-        # html = render_to_string("index.html")
+        # html = render_to_string("base.html")
         # return HttpResponse(html)
         return render(request, 'index.html', context=context)
     else:
@@ -33,8 +35,23 @@ def login(request):
     return HttpResponse(text)
 
 
+def get_cursor():
+    return connection.cursor()
+
+
 def book(request):
-    return HttpResponse("读书页面")
+    try:
+        cursor = get_cursor()
+        try:
+            cursor.execute("select * from book")
+        except Exception:
+            print("Error: unable to fetch data")
+        finally:
+            books = cursor.fetchall()
+            cursor.close()
+        return render(request, 'book.html', context={'books': books})
+    except:
+        print("Error: unable to link database")
 
 
 def book_detail(request, book_id, category):
@@ -43,11 +60,11 @@ def book_detail(request, book_id, category):
 
 
 def movie(request):
-    return HttpResponse("电影页面")
+    return render(request, 'movie.html')
 
 
 def city(request):
-    return HttpResponse("同城页面")
+    return render(request, 'city.html')
 
 
 def for_test(request):
@@ -137,3 +154,13 @@ def company(request):
 
 def school(request):
     return render(request, 'school.html')
+
+
+def connection_mysql_db(request):
+    cursor = connection.cursor()
+    cursor.execute("select * from line")
+    rows = cursor.fetchall()
+    for row in rows:
+        print(row)
+    cursor.close()
+    return render(request, 'index.html')
