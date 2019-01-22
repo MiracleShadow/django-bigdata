@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    书籍
+{% endblock %}
+
+{% block content %}
+    <div>
+        <table>
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>书名</th>
+                <th>作者</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for book in books %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ book.1 }}</td>
+                    <td>{{ book.2 }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
