@@ -13,7 +13,6 @@ urlpatterns = [
     path('if_test/', views.if_test, name='if_test'),
     path('for_test/', views.for_test, name='for_test'),
     path('book/', views.book, name='book'),
-    path('book/detail/<book_id>/<category>', views.book_detail, name='book_detail'),
     path('movie/', views.movie, name='movie'),
     path('city', views.city, name='city'),
     path('signin/', views.login, name='login'),
