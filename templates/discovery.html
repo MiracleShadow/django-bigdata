@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    discovery界面
+{% endblock %}
+
+{% block content %}
+    {#    action 当前数据要提交到哪个URL中#}
+    <form action="" method="post">
+        <table>
+            <tbody>
+            <tr>
+                <td>
+                    <textarea name="textarea" class="main_text" placeholder="请输入文字内容"
+                              style="margin-top: 45px;margin-bottom: 15px;height: 260px; width: 650px;">{{ text }}</textarea>
+                </td>
+                <td width="200px" height="260px;" style="color:#bbb;font-size: 16px;">
+                    {% if text %}
+                        <img src="../static/image/{{ text }}.png">
+                    {% else %}
+                        <span class="create-code-tip">此处生成二维码{{ text }}</span>
+                    {% endif %}
+                </td>
+
+            </tr>
+            <tr>
+                <td><input type="submit" value="生成二维码"
+                           style=" font-size:15px; height: 50px; width: 150px; background: #aaffdc; color: #505050;">
+                </td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+    <p>这是discovery的代码</p>
+{% endblock %}
