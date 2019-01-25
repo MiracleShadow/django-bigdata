@@ -44,19 +44,13 @@ def book(request):
         cursor = get_cursor()
         try:
             cursor.execute("select * from book")
-        except Exception:
-            print("Error: unable to fetch data")
-        finally:
             books = cursor.fetchall()
             cursor.close()
-        return render(request, 'book.html', context={'books': books})
-    except:
-        print("Error: unable to link database")
-
-
-def book_detail(request, book_id, category):
-    text = '您的图书的id是：%s，分类是：%s' % (book_id, category)
-    return HttpResponse(text)
+            return render(request, 'book.html', context={'books': books})
+        except Exception as e:
+            print(e)
+    except Exception as e:
+        print(e)
 
 
 def movie(request):
