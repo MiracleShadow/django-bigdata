@@ -30,9 +30,7 @@ def index(request):
 
 
 def login(request):
-    next_p = request.GET.get('next')
-    text = '登陆页面，登陆完成后要跳转的url是：%s' % next_p
-    return HttpResponse(text)
+    return render(request, 'signin.html')
 
 
 def get_cursor():
