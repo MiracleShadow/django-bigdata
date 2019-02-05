@@ -4,6 +4,7 @@ from django.shortcuts import redirect, reverse
 from django.template.loader import render_to_string
 from datetime import datetime
 from django.db import connection
+from .models import Book
 
 
 class Person(object):
@@ -38,6 +39,27 @@ def get_cursor():
 
 
 def book(request):
+    # # 1. 使用ORM添加一条数据到数据库中
+    # book = Book(name='三国演义', author='罗贯中', price=200)
+    # book.save()
+
+    # 2. 查询
+    # 2.1 根据主键进行查找
+    # book = Book.objects.get(id=2)
+    # print(book)
+    # 2.2 根据其他条件进行查找
+    # books = Book.objects.filter(name='西游记').first()
+    # print(books)
+
+    # 3. 删除数据
+    # book = Book.objects.get(pk=1)
+    # book.delete()
+
+    # 4. 修改数据
+    # book = Book.objects.get(pk=2)
+    # book.price = 200
+    # book.save()
+
     try:
         cursor = get_cursor()
         try:
