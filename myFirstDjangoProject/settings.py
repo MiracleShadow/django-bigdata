@@ -86,7 +86,7 @@ DATABASES = {
         # 数据库引擎
         'ENGINE': 'django.db.backends.mysql',
         # 数据库名
-        'NAME': 'testdb',
+        'NAME': 'djangoDB',
         # 连接mysql数据库用户名
         'USER': 'ms',
         # 连接mysql数据库密码
