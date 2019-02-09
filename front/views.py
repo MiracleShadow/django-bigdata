@@ -172,7 +172,7 @@ def school(request):
 
 def connection_mysql_db(request):
     cursor = connection.cursor()
-    cursor.execute("select * from line")
+    cursor.execute("show tables")
     rows = cursor.fetchall()
     for row in rows:
         print(row)
