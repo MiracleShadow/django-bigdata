@@ -43,6 +43,23 @@ class Store(models.Model):
     registered_users = models.PositiveIntegerField()
 
 
+class Film(models.Model):
+    name = models.CharField(max_length=30)
+    length = models.IntegerField(default=0)
+    releaseday = models.DateField()
+    boxoffice_tot = models.BigIntegerField(default=0)
+    tags = models.ManyToManyField('Tag', related_name="films")
+    regions = models.ManyToManyField('Region', related_name="films")
+
+
+class Region(models.Model):
+    name = models.CharField(max_length=30, unique=True)
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=30, unique=True)
+
+
 '''
 1. 使用makemigrations生成迁移脚本文件
 python mange.py makemigrations [appname]
