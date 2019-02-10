@@ -5,5 +5,45 @@
 {% endblock %}
 
 {% block content %}
-    <p>这是movie的代码</p>
+    <div class="container">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>编号</th>
+                <th>电影名</th>
+                <th>时长</th>
+                <th>上映日期</th>
+                <th>票房(元）</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for film in films %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ film.id }}</td>
+                    <td>{{ film.name }}</td>
+                    <td>{{ film.length }}</td>
+                    <td>{{ film.releaseday }}</td>
+                    <td>{{ film.boxoffice_tot }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li>
+                    <a href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {{ page_html|safe }}
+                <li>
+                    <a href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 {% endblock %}
