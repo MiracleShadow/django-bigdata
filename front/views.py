@@ -4,7 +4,10 @@ from django.shortcuts import redirect, reverse
 from django.template.loader import render_to_string
 from datetime import datetime
 from django.db import connection
-from .models import Book
+from .models import Film
+from .models import Tag
+from .models import Region
+import pandas as pd
 
 
 class Person(object):
@@ -73,8 +76,63 @@ def book(request):
         print(e)
 
 
+def add_movie():
+    df = pd.read_csv('E:/WebSpider/2017films.csv', encoding='gbk')
+    for row in df.iterrows():
+        name = row[1]['mname']
+        tags = row[1]['tag'].split(',')
+        length = row[1]['mlength']
+        releaseday = row[1]['releaseday']
+        regions = row[1]['region'].split('/')
+        boxoffice_tot = row[1]['boxoffice_tot']
+
+        film = Film(name=name, length=length,
+                    releaseday=datetime.strptime(releaseday, '%Y-%m-%d'),
+                    boxoffice_tot=int(boxoffice_tot))
+        film.save()
+
+        for re in regions:
+            r = Region(name=re)
+            try:
+                r.save()
+                film.regions.add(r)
+            except:
+                pass
+
+        for tag in tags:
+            t = Tag(name=tag)
+            try:
+                t.save()
+                film.tags.add(t)
+            except:
+                pass
+
+        film.save()
+
+
 def movie(request):
-    return render(request, 'movie.html')
+    # 从url获取参数
+    page_num = int(request.GET.get("page")) if request.GET.get("page") is not None else 1
+    data_start = (page_num - 1) * 10
+    date_end = page_num * 10
+    all_films = Film.objects.all()[data_start:date_end]
+
+    # 每页显示多少数据
+    per_page = 10
+    # 总数据是多少
+    total_count = Film.objects.all().count()
+    # 需要多少页展示
+    total_page, m = divmod(total_count, per_page)
+    if m:
+        total_page += 1
+
+    html_str_list = []
+    for i in range(1, total_page + 1):
+        tmp = '<li><a href="/movie/?page={0}">{0}</a></li>'.format(i)
+        html_str_list.append(tmp)
+
+    page_html = "".join(html_str_list)
+    return render(request, 'movie.html', {"films": all_films, "page_html": page_html})
 
 
 def city(request):
