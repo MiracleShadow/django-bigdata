@@ -24,7 +24,7 @@
                     <td>{{ film.id }}</td>
                     <td>{{ film.name }}</td>
                     <td>{{ film.length }}</td>
-                    <td>{{ film.releaseday }}</td>
+                    <td>{{ film.releaseday | date:"Y-n-j"}}</td>
                     <td>{{ film.boxoffice_tot }}</td>
                 </tr>
             {% endfor %}
