@@ -15,6 +15,84 @@ class Person(object):
         self.username = username
 
 
+class Page(object):
+    def __init__(self, page_num, total_count, url_prefix, per_page=10, max_page=11):
+        """
+        :param page_num:    当前页码数
+        :param total_count: 数据总数
+        :param url_prefix:  a标签href的前缀
+        :param per_page:    每页显示多少条数据
+        :param max_page:    页面上最多显示几个页码
+        """
+        self.url_prefix = url_prefix
+        # 需要多少页展示
+        self.total_page = (total_count - 1) // per_page + 1
+        try:
+            self.page_num = min(int(page_num), self.total_page)
+            # 如果输入的也么书超过了最大的页码数，默认返回最后一页
+        except Exception as e:
+            # 当输入的页码不是正经数字的时候
+            self.page_num = 1
+
+        # 定义两个变量保存数据从哪儿取到哪儿
+        self.data_start = (page_num - 1) * per_page
+        self.data_end = page_num * per_page
+
+        # 页面上总共展示多少页码
+        if page_num - (max_page // 2) < 1:
+            self.page_start, self.page_end = 1, max_page
+        elif page_num + (max_page // 2) > self.total_page:
+            self.page_start, self.page_end = self.total_page - max_page, self.total_page
+        else:
+            self.page_start = max(page_num - max_page // 2, 1)
+            self.page_end = min(page_num + max_page // 2, self.total_page)
+
+    @property
+    def start(self):
+        return self.data_start
+
+    @property
+    def end(self):
+        return self.data_end
+
+    def page_html(self):
+        html_str_list = ['<li><a href="{}?page=1">首页</a></li>'.format(self.url_prefix)]
+
+        # 如果是第一页就没有上一页
+        if self.page_num <= 1:
+            html_str_list.append(
+                '<li class="disable"><a href="#" aria-label="Previous">'
+                '<span aria-hidden="true">&laquo;</span></a></li>')
+        else:
+            html_str_list.append(
+                '<li><a href="{0}?page={1}" aria-label="Previous">'
+                '<span aria-hidden="true">&laquo;</span></a></li>'.format(
+                    self.url_prefix, self.page_num - 1))
+
+        for i in range(self.page_start, self.page_end + 1):
+            # 如果是当前页就加active样式类
+            if i == self.page_num:
+                tmp = '<li class="active"><a href="{0}?page={1}">{1}</a></li>'.format(self.url_prefix, i)
+            else:
+                tmp = '<li><a href="{0}?page={1}">{1}</a></li>'.format(self.url_prefix, i)
+            html_str_list.append(tmp)
+
+        # 如果是最后一页就没有下一页
+        if self.page_num >= self.total_page:
+            html_str_list.append(
+                '<li class="disable"><a href="#" aria-label="Previous">'
+                '<span aria-hidden="true">&raquo;</span></a></li>')
+        else:
+            html_str_list.append(
+                '<li><a href="{0}?page={1}" aria-label="Previous">'
+                '<span aria-hidden="true">&raquo;</span></a></li>'.format(
+                    self.url_prefix, self.page_num + 1))
+
+        html_str_list.append('<li><a href="{}?page={}">尾页</a></li>'.format(self.url_prefix, self.total_page))
+        page_html = "".join(html_str_list)
+        return page_html
+
+
 def index(request):
     # ?username=xxx
     connection_mysql_db(request)
@@ -96,7 +174,7 @@ def add_movie():
             try:
                 r.save()
                 film.regions.add(r)
-            except:
+            except Exception as e:
                 pass
 
         for tag in tags:
@@ -104,7 +182,7 @@ def add_movie():
             try:
                 t.save()
                 film.tags.add(t)
-            except:
+            except Exception as e:
                 pass
 
         film.save()
@@ -113,26 +191,13 @@ def add_movie():
 def movie(request):
     # 从url获取参数
     page_num = int(request.GET.get("page")) if request.GET.get("page") is not None else 1
-    data_start = (page_num - 1) * 10
-    date_end = page_num * 10
-    all_films = Film.objects.all()[data_start:date_end]
-
     # 每页显示多少数据
-    per_page = 10
+    per_page = 7
     # 总数据是多少
     total_count = Film.objects.all().count()
-    # 需要多少页展示
-    total_page, m = divmod(total_count, per_page)
-    if m:
-        total_page += 1
-
-    html_str_list = []
-    for i in range(1, total_page + 1):
-        tmp = '<li><a href="/movie/?page={0}">{0}</a></li>'.format(i)
-        html_str_list.append(tmp)
-
-    page_html = "".join(html_str_list)
-    return render(request, 'movie.html', {"films": all_films, "page_html": page_html})
+    page_obj = Page(page_num, total_count, url_prefix='/movie/', per_page=per_page, max_page=5)
+    all_films = Film.objects.all()[page_obj.start: page_obj.end]
+    return render(request, 'movie.html', {"films": all_films, "page_html": page_obj.page_html()})
 
 
 def city(request):
