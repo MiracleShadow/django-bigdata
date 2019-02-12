@@ -5,5 +5,43 @@
 {% endblock %}
 
 {% block content %}
-    <p>这是city的代码</p>
+    <div class="container">
+        <table class="table table-bordered">
+            <thead>
+            <h2>
+                {{ location.name }}实时天气状况
+            </h2>
+            </thead>
+            <tbody>
+            <tr>
+                <td>天气现象</td>
+                <td>{{ now.text }}</td>
+            </tr>
+            <tr>
+                <td>温度</td>
+                <td>{{ now.temperature }}℃</td>
+            </tr>
+            <tr>
+                <td>体感温度</td>
+                <td>{{ now.feels_like }}℃</td>
+            </tr>
+            <tr>
+                <td>能见度</td>
+                <td>{{ now.visibility }}km/h</td>
+            </tr>
+            <tr>
+                <td>更新时间</td>
+                <td>{{ last_update }}</td>
+            </tr>
+
+            <tr>
+                <td>天气预警</td>
+                <td>{{ alarms.description }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <a href="?name=beijing">北京</a></li>
+    <a href="?name=huainan">淮南</a></li>
+    <a href="?name=boxing">博兴</a></li>
 {% endblock %}
