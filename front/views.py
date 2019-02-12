@@ -8,6 +8,7 @@ from .models import Film
 from .models import Tag
 from .models import Region
 import pandas as pd
+import requests
 
 
 class Person(object):
@@ -97,14 +98,14 @@ def index(request):
     # ?username=xxx
     connection_mysql_db(request)
     username = request.GET.get('username')
-    context = {
+    conweather_text = {
         'username': username,
         "today": datetime.now()
     }
     if username:
         # html = render_to_string("base.html")
         # return HttpResponse(html)
-        return render(request, 'index.html', context=context)
+        return render(request, 'index.html', conweather_text=conweather_text)
     else:
         # 多个app中出现同名url，使用应用命名空间解决冲突问题
         login_url = reverse('front:login')
@@ -144,10 +145,10 @@ def book(request):
     try:
         cursor = get_cursor()
         try:
-            cursor.execute("select * from book")
+            cursor.execute("select * from front_film")
             books = cursor.fetchall()
             cursor.close()
-            return render(request, 'book.html', context={'books': books})
+            return render(request, 'book.html', conweather_text={'books': books})
         except Exception as e:
             print(e)
     except Exception as e:
@@ -191,21 +192,43 @@ def add_movie():
 def movie(request):
     # 从url获取参数
     page_num = int(request.GET.get("page")) if request.GET.get("page") is not None else 1
-    # 每页显示多少数据
-    per_page = 7
     # 总数据是多少
     total_count = Film.objects.all().count()
-    page_obj = Page(page_num, total_count, url_prefix='/movie/', per_page=per_page, max_page=5)
+    page_obj = Page(page_num, total_count, url_prefix='/movie/', per_page=10, max_page=10)
     all_films = Film.objects.all()[page_obj.start: page_obj.end]
     return render(request, 'movie.html', {"films": all_films, "page_html": page_obj.page_html()})
 
 
 def city(request):
-    return render(request, 'city.html')
+    city_name = request.GET.get("name") if request.GET.get("name") is not None else 'boxing'
+    weather_url = 'https://api.seniverse.com/v3/weather/now.json?' \
+                  'key=xm0y41jwmnke1tdi&location={}&language=zh-Hans&unit=c'.format(city_name)
+    alarm_url = 'https://api.seniverse.com/v3/weather/alarm.json?key=xm0y41jwmnke1tdi&location={0}'.format(city_name)
+
+    weather = requests.get(weather_url)
+    weather_text = eval(weather.text)['results'][0]
+    location = weather_text['location']
+    now = weather_text['now']
+    last_update = weather_text['last_update']
+    try:
+        alarm = requests.get(alarm_url)
+        alarm_text = eval(alarm.text)['results'][0]
+        alarms = alarm_text['alarms'][0]
+    except Exception as e:
+        alarms = {'description': '暂无'}
+        pass
+
+    context = {
+        'now': now,
+        'location': location,
+        'last_update': last_update,
+        'alarms': alarms
+    }
+    return render(request, 'city.html', context=context)
 
 
 def for_test(request):
-    context = {
+    conweather_text = {
         'person': {
             'username': 'MiracleShadow',
             'age': 21,
@@ -242,12 +265,12 @@ def for_test(request):
             },
         ]
     }
-    return render(request, 'for_test.html', context=context)
+    return render(request, 'for_test.html', conweather_text=conweather_text)
 
 
 def if_test(request):
     # p = Person('MiracleShadow')
-    context = {
+    conweather_text = {
         # 'person': p,
         'person': {
             'username': 'MiracleShadow',
@@ -263,15 +286,15 @@ def if_test(request):
             '王五'
         ],
     }
-    return render(request, 'if_test.html', context=context)
+    return render(request, 'if_test.html', conweather_text=conweather_text)
 
 
 def add_view(request):
-    context = {
+    conweather_text = {
         'value1': ['1', '2', '3'],
         'value2': [4, 5, 6],
     }
-    return render(request, 'add.html', context=context)
+    return render(request, 'add.html', conweather_text=conweather_text)
 
 
 def cut_view(request):
@@ -279,10 +302,10 @@ def cut_view(request):
 
 
 def date_view(request):
-    context = {
+    conweather_text = {
         "today": datetime.now(),
     }
-    return render(request, 'date.html', context=context)
+    return render(request, 'date.html', conweather_text=conweather_text)
 
 
 def company(request):

@@ -14,7 +14,7 @@ urlpatterns = [
     path('for_test/', views.for_test, name='for_test'),
     path('book/', views.book, name='book'),
     path('movie/', views.movie, name='movie'),
-    path('city', views.city, name='city'),
+    path('city/', views.city, name='city'),
     path('signin/', views.login, name='login'),
     path('add/', views.add_view),
     path('cut/', views.cut_view),
