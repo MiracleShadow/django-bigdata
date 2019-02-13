@@ -12,29 +12,36 @@
                     <h2>{{ location.name }}未来{{ daily_len }}天天气预报</h2>
                 </td>
             </tr>
-            <tr>
-                {% for one_daily in daily %}
-                    <td width="20%">{{ one_daily.date }}</td>
-                {% endfor %}
-            </tr>
-            <tr>
-                {% for one_daily in daily %}
-                    <td><img src="{% static 'image/weather_img/' %}{{ one_daily.code_day }}.png"
-                             alt="">白天：{{ one_daily.text_day }}
-                        <img src="{% static 'image/weather_img/' %}{{ one_daily.code_night }}.png"
-                             alt="">夜间：{{ one_daily.text_night }}</td>
-                {% endfor %}
-            </tr>
-            <tr>
-                {% for one_daily in daily %}
-                    <td>{{ one_daily.low }}～{{ one_daily.high }}℃</td>
-                {% endfor %}
-            </tr>
-            <tr>
-                {% for one_daily in daily %}
-                    <td>{{ one_daily.wind_direction }}风{{ one_daily.wind_scale }}级</td>
-                {% endfor %}
-            </tr>
+            {% if weather_daily_api is False %}
+                <tr>
+                    抱歉，api已失效，请联系管理员。
+                </tr>
+            {% else %}
+                <tr>
+                    {% for one_daily in daily %}
+                        <td width="20%">{{ one_daily.date }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for one_daily in daily %}
+                        <td><img src="{% static 'image/weather_img/' %}{{ one_daily.code_day }}.png"
+                                 alt="">白天：{{ one_daily.text_day }}
+                            <img src="{% static 'image/weather_img/' %}{{ one_daily.code_night }}.png"
+                                 alt="">夜间：{{ one_daily.text_night }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for one_daily in daily %}
+                        <td>{{ one_daily.low }}～{{ one_daily.high }}℃</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for one_daily in daily %}
+                        <td>{{ one_daily.wind_direction }}风{{ one_daily.wind_scale }}级</td>
+                    {% endfor %}
+                </tr>
+            {% endif %}
+
         </table>
 
         <table class="table table-bordered">
