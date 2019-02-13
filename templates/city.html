@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}
     city界面
 {% endblock %}
@@ -7,41 +7,92 @@
 {% block content %}
     <div class="container">
         <table class="table table-bordered">
-            <thead>
-            <h2>
-                {{ location.name }}实时天气状况
-            </h2>
-            </thead>
-            <tbody>
             <tr>
-                <td>天气现象</td>
-                <td>{{ now.text }}</td>
+                <td colspan="{{ daily_len }}">
+                    <h2>{{ location.name }}未来{{ daily_len }}天天气预报</h2>
+                </td>
             </tr>
             <tr>
-                <td>温度</td>
-                <td>{{ now.temperature }}℃</td>
+                {% for one_daily in daily %}
+                    <td width="20%">{{ one_daily.date }}</td>
+                {% endfor %}
             </tr>
             <tr>
-                <td>体感温度</td>
-                <td>{{ now.feels_like }}℃</td>
+                {% for one_daily in daily %}
+                    <td><img src="{% static 'image/weather_img/' %}{{ one_daily.code_day }}.png"
+                             alt="">白天：{{ one_daily.text_day }}
+                        <img src="{% static 'image/weather_img/' %}{{ one_daily.code_night }}.png"
+                             alt="">夜间：{{ one_daily.text_night }}</td>
+                {% endfor %}
             </tr>
             <tr>
-                <td>能见度</td>
-                <td>{{ now.visibility }}km/h</td>
+                {% for one_daily in daily %}
+                    <td>{{ one_daily.low }}～{{ one_daily.high }}℃</td>
+                {% endfor %}
             </tr>
             <tr>
-                <td>更新时间</td>
-                <td>{{ last_update }}</td>
+                {% for one_daily in daily %}
+                    <td>{{ one_daily.wind_direction }}风{{ one_daily.wind_scale }}级</td>
+                {% endfor %}
             </tr>
+        </table>
 
+        <table class="table table-bordered">
+            <thead>
             <tr>
-                <td>天气预警</td>
-                <td>{{ alarms.description }}</td>
+                <td colspan="2">
+                    <h2>{{ location.name }}实时天气状况</h2>
+                </td>
             </tr>
-            </tbody>
+            </thead>
+            {% if weather_now_api is Fasle %}
+                抱歉，api已失效，请联系管理员。
+            {% else %}
+                <tbody>
+                <tr>
+                    <td>天气现象</td>
+                    <td>{{ now.text }}</td>
+                </tr>
+                <tr>
+                    <td>温度</td>
+                    <td>{{ now.temperature }}℃</td>
+                </tr>
+                <tr>
+                    <td>体感温度</td>
+                    <td>{{ now.feels_like }}℃</td>
+                </tr>
+                <tr>
+                    <td>能见度</td>
+                    <td>{{ now.visibility }}km</td>
+                </tr>
+                <tr>
+                    <td>更新时间</td>
+                    <td>{{ last_update }}</td>
+                </tr>
+                <tr>
+                    <td>天气预警</td>
+                    {% if alarm_api %}
+                        <td>
+                            {% for alarm in alarms %}
+                                {{ alarm.description }}
+                            {% endfor %}
+                        </td>
+                    {% else %}
+                        <td>抱歉，api已失效，请联系管理员。</td>
+                    {% endif %}
+                </tr>
+                </tbody>
+            {% endif %}
         </table>
     </div>
-    <a href="?name=beijing">北京</a></li>
-    <a href="?name=huainan">淮南</a></li>
-    <a href="?name=boxing">博兴</a></li>
+    <a href="?name=beijing">北京</a>
+    <a href="?name=huainan">淮南</a>
+    <a href="?name=boxing">博兴</a>
+    <form action="?name=boxing" method="post">
+        <label>
+            请输入市、县、地区中文名称查询：
+            <input type="text" name="text">
+            <input type="submit" name="Submit" value="提交">
+        </label>
+    </form>
 {% endblock %}
