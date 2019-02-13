@@ -98,14 +98,14 @@ def index(request):
     # ?username=xxx
     connection_mysql_db(request)
     username = request.GET.get('username')
-    conweather_text = {
+    context = {
         'username': username,
         "today": datetime.now()
     }
     if username:
         # html = render_to_string("base.html")
         # return HttpResponse(html)
-        return render(request, 'index.html', conweather_text=conweather_text)
+        return render(request, 'index.html', context=context)
     else:
         # 多个app中出现同名url，使用应用命名空间解决冲突问题
         login_url = reverse('front:login')
@@ -148,7 +148,7 @@ def book(request):
             cursor.execute("select * from front_film")
             books = cursor.fetchall()
             cursor.close()
-            return render(request, 'book.html', conweather_text={'books': books})
+            return render(request, 'book.html', context={'books': books})
         except Exception as e:
             print(e)
     except Exception as e:
@@ -200,35 +200,80 @@ def movie(request):
 
 
 def city(request):
-    city_name = request.GET.get("name") if request.GET.get("name") is not None else 'boxing'
-    weather_url = 'https://api.seniverse.com/v3/weather/now.json?' \
-                  'key=xm0y41jwmnke1tdi&location={}&language=zh-Hans&unit=c'.format(city_name)
-    alarm_url = 'https://api.seniverse.com/v3/weather/alarm.json?key=xm0y41jwmnke1tdi&location={0}'.format(city_name)
-
-    weather = requests.get(weather_url)
-    weather_text = eval(weather.text)['results'][0]
-    location = weather_text['location']
-    now = weather_text['now']
-    last_update = weather_text['last_update']
+    if request.method == 'GET':
+        city_name = request.GET.get("name") if request.GET.get("name") is not None else 'boxing'
+    else:
+        city_name = request.POST.get("text")
+        if len(city_name) == 0:
+            city_name = 'boxing'
+    key = 'xm0y41jwmnke1tdi'
+    weather_now_url = 'https://api.seniverse.com/v3/weather/now.json?' \
+                      'key={0}&location={1}&language=zh-Hans&unit=c'.format(key, city_name)
+    alarm_url = 'https://api.seniverse.com/v3/weather/alarm.json?key={0}&location={1}'.format(key, city_name)
+    weather_daily_url = 'https://api.seniverse.com/v3/weather/daily.json' \
+                        '?key={0}&location={1}&language=zh-Hans'.format(key, city_name)
     try:
-        alarm = requests.get(alarm_url)
-        alarm_text = eval(alarm.text)['results'][0]
-        alarms = alarm_text['alarms'][0]
+        weather_now = requests.get(weather_now_url, timeout=4)
+        weather_now_text = weather_now.json()['results'][0]
+        location = weather_now_text['location']
+        now = weather_now_text['now']
+        last_update = weather_now_text['last_update']
+        weather_now_api = True
+    except requests.exceptions.RequestException:
+        weather_now_api = False
+        now, location, last_update = {}, {}, {}
+    except Exception:
+        weather_now_api = False
+        now, location, last_update = {}, {}, {}
+
+    try:
+        alarm = requests.get(alarm_url, timeout=4)
+        alarm_api = True
+        alarm_text = alarm.json()['results'][0]
+        # 该城市所有的灾害预警数组
+        alarms = alarm_text['alarms']
+        alarms_len = len(alarms)
+        if alarms_len == 0:
+            alarms = [{'description': '暂无信息'}]
+    except requests.exceptions.RequestException:
+        alarm_api = False
+        alarms = []
+    except Exception:
+        alarm_api = False
+        alarms = []
+
+    try:
+        weather_daily = requests.get(weather_daily_url, timeout=4)
+        weather_daily_text = weather_daily.json()['results'][0]
+        daily = weather_daily_text['daily']
+        daily_len = len(daily)
+        weather_daily_api = True
+    except requests.exceptions.RequestException:
+        weather_daily_api = False
+        daily_len = 0
+        daily = []
     except Exception as e:
-        alarms = {'description': '暂无'}
-        pass
+        print(e)
+        weather_daily_api = False
+        daily_len = 0
+        daily = []
 
     context = {
+        'weather_now_api': weather_now_api,
         'now': now,
         'location': location,
         'last_update': last_update,
-        'alarms': alarms
+        'alarm_api': alarm_api,
+        'alarms': alarms,
+        'weather_daily_api': weather_daily_api,
+        'daily_len': daily_len,
+        'daily': daily,
     }
     return render(request, 'city.html', context=context)
 
 
 def for_test(request):
-    conweather_text = {
+    context = {
         'person': {
             'username': 'MiracleShadow',
             'age': 21,
@@ -265,12 +310,12 @@ def for_test(request):
             },
         ]
     }
-    return render(request, 'for_test.html', conweather_text=conweather_text)
+    return render(request, 'for_test.html', context=context)
 
 
 def if_test(request):
     # p = Person('MiracleShadow')
-    conweather_text = {
+    context = {
         # 'person': p,
         'person': {
             'username': 'MiracleShadow',
@@ -286,15 +331,15 @@ def if_test(request):
             '王五'
         ],
     }
-    return render(request, 'if_test.html', conweather_text=conweather_text)
+    return render(request, 'if_test.html', context=context)
 
 
 def add_view(request):
-    conweather_text = {
+    context = {
         'value1': ['1', '2', '3'],
         'value2': [4, 5, 6],
     }
-    return render(request, 'add.html', conweather_text=conweather_text)
+    return render(request, 'add.html', context=context)
 
 
 def cut_view(request):
@@ -302,10 +347,10 @@ def cut_view(request):
 
 
 def date_view(request):
-    conweather_text = {
+    context = {
         "today": datetime.now(),
     }
-    return render(request, 'date.html', conweather_text=conweather_text)
+    return render(request, 'date.html', context=context)
 
 
 def company(request):
