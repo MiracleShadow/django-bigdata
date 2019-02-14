@@ -57,7 +57,7 @@ class Page(object):
         return self.data_end
 
     def page_html(self):
-        html_str_list = ['<li><a href="{}?page=1">首页</a></li>'.format(self.url_prefix)]
+        html_str_list = ['<li><a href="{url}?page=1">首页</a></li>'.format(url=self.url_prefix)]
 
         # 如果是第一页就没有上一页
         if self.page_num <= 1:
@@ -73,9 +73,10 @@ class Page(object):
         for i in range(self.page_start, self.page_end + 1):
             # 如果是当前页就加active样式类
             if i == self.page_num:
-                tmp = '<li class="active"><a href="{0}?page={1}">{1}</a></li>'.format(self.url_prefix, i)
+                tmp = '<li class="active"><a href="{url}?page={page_num}">{page_num}</a></li>'.format(
+                    url=self.url_prefix, page_num=i)
             else:
-                tmp = '<li><a href="{0}?page={1}">{1}</a></li>'.format(self.url_prefix, i)
+                tmp = '<li><a href="{url}?page={page_num}">{page_num}</a></li>'.format(url=self.url_prefix, page_num=i)
             html_str_list.append(tmp)
 
         # 如果是最后一页就没有下一页
@@ -89,9 +90,84 @@ class Page(object):
                 '<span aria-hidden="true">&raquo;</span></a></li>'.format(
                     self.url_prefix, self.page_num + 1))
 
-        html_str_list.append('<li><a href="{}?page={}">尾页</a></li>'.format(self.url_prefix, self.total_page))
+        html_str_list.append(
+            '<li><a href="{url}?page={page_num}">尾页</a></li>'.format(
+                url=self.url_prefix, page_num=self.total_page))
         page_html = "".join(html_str_list)
         return page_html
+
+
+class Weather(object):
+    def __init__(self, key='xm0y41jwmnke1tdi', city_name='boxing'):
+        # 天气API文档：https://www.seniverse.com/doc
+        self.key = key
+        self.weather_now_url = 'https://api.seniverse.com/v3/weather/now.json?' \
+                               'key={key}&location={city_name}&language=zh-Hans&unit=c'.format(key=key,
+                                                                                               city_name=city_name)
+        self.alarm_url = 'https://api.seniverse.com/v3/weather/alarm.json?' \
+                         'key={key}&location={city_name}'.format(key=key, city_name=city_name)
+        self.weather_daily_url = 'https://api.seniverse.com/v3/weather/daily.json' \
+                                 '?key={key}&location={city_name}&language=zh-Hans'.format(key=key, city_name=city_name)
+
+    def context(self):
+        try:
+            weather_now = requests.get(self.weather_now_url, timeout=4)
+            weather_now_text = weather_now.json()['results'][0]
+            location = weather_now_text['location']
+            now = weather_now_text['now']
+            last_update = weather_now_text['last_update']
+            weather_now_api = True
+        except requests.exceptions.RequestException:
+            weather_now_api = False
+            now, location, last_update = {}, {}, {}
+        except Exception:
+            weather_now_api = False
+            now, location, last_update = {}, {}, {}
+
+        try:
+            alarm = requests.get(self.alarm_url, timeout=4)
+            alarm_api = True
+            alarm_text = alarm.json()['results'][0]
+            # 该城市所有的灾害预警数组
+            alarms = alarm_text['alarms']
+            alarms_len = len(alarms)
+            if alarms_len == 0:
+                alarms = [{'description': '暂无信息'}]
+        except requests.exceptions.RequestException:
+            alarm_api = False
+            alarms = []
+        except Exception:
+            alarm_api = False
+            alarms = []
+
+        try:
+            weather_daily = requests.get(self.weather_daily_url, timeout=4)
+            weather_daily_text = weather_daily.json()['results'][0]
+            daily = weather_daily_text['daily']
+            daily_len = len(daily)
+            weather_daily_api = True
+        except requests.exceptions.RequestException:
+            weather_daily_api = False
+            daily_len = 0
+            daily = []
+        except Exception as e:
+            print(e)
+            weather_daily_api = False
+            daily_len = 0
+            daily = []
+
+        context = {
+            'weather_now_api': weather_now_api,
+            'now': now,
+            'location': location,
+            'last_update': last_update,
+            'alarm_api': alarm_api,
+            'alarms': alarms,
+            'weather_daily_api': weather_daily_api,
+            'daily_len': daily_len,
+            'daily': daily,
+        }
+        return context
 
 
 def index(request):
@@ -206,70 +282,8 @@ def city(request):
         city_name = request.POST.get("text")
         if len(city_name) == 0:
             city_name = 'boxing'
-    key = 'xm0y41jwmnke1tdi'
-    weather_now_url = 'https://api.seniverse.com/v3/weather/now.json?' \
-                      'key={0}&location={1}&language=zh-Hans&unit=c'.format(key, city_name)
-    alarm_url = 'https://api.seniverse.com/v3/weather/alarm.json?key={0}&location={1}'.format(key, city_name)
-    weather_daily_url = 'https://api.seniverse.com/v3/weather/daily.json' \
-                        '?key={0}&location={1}&language=zh-Hans'.format(key, city_name)
-    try:
-        weather_now = requests.get(weather_now_url, timeout=4)
-        weather_now_text = weather_now.json()['results'][0]
-        location = weather_now_text['location']
-        now = weather_now_text['now']
-        last_update = weather_now_text['last_update']
-        weather_now_api = True
-    except requests.exceptions.RequestException:
-        weather_now_api = False
-        now, location, last_update = {}, {}, {}
-    except Exception:
-        weather_now_api = False
-        now, location, last_update = {}, {}, {}
-
-    try:
-        alarm = requests.get(alarm_url, timeout=4)
-        alarm_api = True
-        alarm_text = alarm.json()['results'][0]
-        # 该城市所有的灾害预警数组
-        alarms = alarm_text['alarms']
-        alarms_len = len(alarms)
-        if alarms_len == 0:
-            alarms = [{'description': '暂无信息'}]
-    except requests.exceptions.RequestException:
-        alarm_api = False
-        alarms = []
-    except Exception:
-        alarm_api = False
-        alarms = []
-
-    try:
-        weather_daily = requests.get(weather_daily_url, timeout=4)
-        weather_daily_text = weather_daily.json()['results'][0]
-        daily = weather_daily_text['daily']
-        daily_len = len(daily)
-        weather_daily_api = True
-    except requests.exceptions.RequestException:
-        weather_daily_api = False
-        daily_len = 0
-        daily = []
-    except Exception as e:
-        print(e)
-        weather_daily_api = False
-        daily_len = 0
-        daily = []
-
-    context = {
-        'weather_now_api': weather_now_api,
-        'now': now,
-        'location': location,
-        'last_update': last_update,
-        'alarm_api': alarm_api,
-        'alarms': alarms,
-        'weather_daily_api': weather_daily_api,
-        'daily_len': daily_len,
-        'daily': daily,
-    }
-    return render(request, 'city.html', context=context)
+    weather_context = Weather(city_name=city_name).context()
+    return render(request, 'city.html', context=weather_context)
 
 
 def for_test(request):
