@@ -2,7 +2,72 @@
 
 {% block title %}云盘界面
 {% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/static/css/animate.min.css"/>
+    <link rel="stylesheet" href="/static/css/vegas.min.css"/>
+    <link rel="stylesheet" href="/static/css/style.css"/>
+    <link rel="stylesheet" href="/static/css/style2.css"/>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_xtmtjsdjlmc84cxr.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_k8psy17rqdoyldi.css">
+{% endblock %}
 
 {% block content %}
-    <p>这是school的代码</p>
+    <section id="content">
+        <div class="container">
+
+            <div class="col-sj-12">
+
+                <!-- update-file-container -->
+                <div class="up-container wow bounceIn" data-wow-delay="0.9s">
+
+                    <!-- search file -->
+                    <form id="search" action="{% url 'front:search' %}" method="get">
+                        <div class="input-box">
+                            <input id="files-info" name="kw" type="text"
+                                   onkeydown="if(event.keyCode==13){return false;}" autocomplete="off"
+                                   placeholder="Search File"/>
+                            <span class="iconfont search-text-icon">&#xe714;</span>
+                        </div>
+                    </form><!-- END search file -->
+
+                    <!-- upload files -->
+                    <form id="form" action="/" method="post" runat="server" enctype="multipart/form-data">
+                        <input id="files" name="file" multiple="multiple" style="display: none;" class="file-addr"
+                               type="file"/>
+                        {% csrf_token %}
+                        <input id="bt" type="button" value="Upload File"/>
+                    </form><!-- END Upload file -->
+
+
+                </div>
+
+                <!-- show_server_list -->
+                <div class="show-file bounceIn">
+                    <div class="file-title">
+                        <div class="file-name1" style="width:25%;">FileName</div>
+                        <div class="file-size" style="width:10%;">FileSize</div>
+                        <div class="file-size" style="width:10%;">Visits</div>
+                        <div class="file-date" style="width:20%;">FileDate</div>
+                        <div class="file-link" style="width:35%;">FileLink</div>
+                    </div>
+                    {% block yunpan_content %}
+                    {% endblock %}
+                </div>
+
+            </div>
+
+        </div><!-- /.container -->
+    </section>
+{% endblock %}
+
+{% block script %}
+    <!-- ThemePlug -->
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/vegas.min.js"></script>
+    <script src="/static/js/wow.min.js"></script>
+    <script src="/static/js/dist/clipboard.min.js"></script>
+
+    <!-- Page -->
+    <script src="/static/js/index.js"></script>
 {% endblock %}
