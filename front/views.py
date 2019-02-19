@@ -371,8 +371,8 @@ def company(request):
     return render(request, 'company.html')
 
 
-def school(request):
-    return render(request, 'school.html')
+def yunpan(request):
+    return render(request, 'yunpan.html')
 
 
 def connection_mysql_db(request):

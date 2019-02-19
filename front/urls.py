@@ -20,5 +20,5 @@ urlpatterns = [
     path('cut/', views.cut_view),
     path('date/', views.date_view),
     path('company/', views.company, name='company'),
-    path('school/', views.school, name='school'),
+    path('yunpan/', views.yunpan, name='yunpan'),
 ]
