@@ -95,7 +95,7 @@
     <a href="?name=beijing">北京</a>
     <a href="?name=huainan">淮南</a>
     <a href="?name=boxing">博兴</a>
-    <form action="?name=boxing" method="post">
+    <form action="?name=boxing" method="post">{% csrf_token %}
         <label>
             请输入市、县、地区中文名称查询：
             <input type="text" name="text">
