@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 
 # 应用命名空间
@@ -20,5 +20,7 @@ urlpatterns = [
     path('cut/', views.cut_view),
     path('date/', views.date_view),
     path('company/', views.company, name='company'),
-    path('yunpan/', views.yunpan, name='yunpan'),
+    path('yunpan/', views.yunpan.as_view(), name='yunpan'),
+    re_path('^s/(?P<code>\d+)/$', views.DisplayView.as_view()),
+    re_path('^search/', views.SearchView.as_view(), name="search"),
 ]
