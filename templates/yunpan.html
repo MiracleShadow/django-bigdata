@@ -32,11 +32,11 @@
                     </form><!-- END search file -->
 
                     <!-- upload files -->
-                    <form id="form" action="/" method="post" runat="server" enctype="multipart/form-data">
-                        <input id="files" name="file" multiple="multiple" style="display: none;" class="file-addr"
-                               type="file"/>
+                    <form id="form" method="post" runat="server" enctype="multipart/form-data">
+                        {{ form.as_table }}
+                        {# <input id="files" name="file" multiple="multiple" style="display: none;" class="file-addr" type="file"/>#}
                         {% csrf_token %}
-                        <input id="bt" type="button" value="Upload File"/>
+                        <input id="bt" type="submit" value="提交"/>
                     </form><!-- END Upload file -->
 
 
