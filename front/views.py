@@ -5,6 +5,7 @@ from django.template.loader import render_to_string
 from django.views.generic import View  # 这是Django给我们的视图类
 from datetime import datetime
 from django.db import connection
+from django import forms
 from .models import Film
 from .models import Tag
 from .models import Region
@@ -376,18 +377,33 @@ def company(request):
     return render(request, 'company.html')
 
 
-class yunpan(View):
+class YunpanForm(forms.Form):
+    # label: 在网页上显示的label标签信息，为空则不显示
+    # error_messages: 错误信息
+    file = forms.FileField(label='', error_messages={'required': '必须要选择一个文件'})
+
+
+class Yunpan(View):
     def get(self, request):
-        return render(request, "yunpan.html", {})
+        print('yunpan get')
+        form = YunpanForm()
+        return render(request, "yunpan.html", {'form': form})
 
     def post(self, request):
-        if request.FILES:
-            file = request.FILES.get("file")
+        print('yunpan post')
+        form = YunpanForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = form.cleaned_data['file']
             name = file.name
             size = int(file.size)
-            with open('static/file/' + name, 'wb')as f:
-                f.write(file.read())
             code = ''.join(random.sample(string.digits, 8))
+
+            with open('./static/file/' + name, 'wb') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
+                # 遍历UploadedFile.chunks()，而不是直接使用read()方法，
+                # 能确保大文件不会占用系统过多的内存。
+
             u = Upload(
                 path='static/file/' + name,
                 name=name,
@@ -406,6 +422,17 @@ class DisplayView(View):
             for i in u:
                 i.DownloadDocount += 1
                 i.save()
+        # 访问一次，DownloadDocount字段自增一次
+        return render(request, 'content.html', {"content": u})
+
+
+class MyView(View):
+    def get(self, request):
+        IP = request.META['REMOTE_ADDR']
+        u = Upload.objects.filter(PCIP=str(IP))
+        for i in u:
+            i.DownloadDocount += 1
+            i.save()
         return render(request, 'content.html', {"content": u})
 
 
