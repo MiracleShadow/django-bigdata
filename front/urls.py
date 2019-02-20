@@ -20,7 +20,8 @@ urlpatterns = [
     path('cut/', views.cut_view),
     path('date/', views.date_view),
     path('company/', views.company, name='company'),
-    path('yunpan/', views.yunpan.as_view(), name='yunpan'),
+    path('yunpan/', views.Yunpan.as_view(), name='yunpan'),
     re_path('^s/(?P<code>\d+)/$', views.DisplayView.as_view()),
-    re_path('^search/', views.SearchView.as_view(), name="search"),
+    re_path('^my/$', views.MyView.as_view(), name="MY"),
+    path('search/', views.SearchView.as_view(), name="search"),
 ]
