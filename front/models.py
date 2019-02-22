@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime  # 导入datetime 用于处理上传文件的时间字段
+from django.contrib.auth.models import AbstractBaseUser
 
 
 # Create your models here.
@@ -79,12 +80,31 @@ class Upload(models.Model):
 
     # PCIP 上传文件的IP
 
-    class Meta():  # Meta 可用于定义数据表名，排序方式等。
+    class Meta:  # Meta 可用于定义数据表名，排序方式等。
         verbose_name = "download"  # 指明一个易于理解和表示的单词形式的对象。
         db_table = "download"  # 声明数据表的名。
 
     def __str__(self):  # 表示在做查询操作时，我们看到的是 name 字段
         return self.name
+
+
+class User(AbstractBaseUser):
+    AdminType = (
+        ('REGULAR_USER', "Regular User"),
+        ('VIP_USER', "Vip User")
+    )
+    username = models.CharField(max_length=128, unique=True)
+    email = models.EmailField(unique=True)
+    create_time = models.DateTimeField(auto_now_add=True, null=True)
+    # One of UserType
+    admin_type = models.CharField(max_length=32, choices=AdminType, default="Regular User")
+
+    def is_vip_user(self):
+        return self.admin_type == 'VIP_USER'
+
+    class Meta:
+        db_table = "user"
+
 
 
 '''
