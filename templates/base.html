@@ -58,9 +58,16 @@
                            onclick="_hmt.push(['_trackEvent', 'navbar', 'click', 'youzhan-main-nav'])">发现</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right hidden-sm">
-                    <li><a href="{% url 'front:login' %}"
-                           onclick="_hmt.push(['_trackEvent', 'navbar', 'click', 'about'])">登陆</a>
-                    </li>
+                    {% if request.session.is_login %}
+                        <li><a href="#">当前在线：{{ request.session.user_name }}</a></li>
+                        <li><a href="{% url 'front:logout' %}"
+                               onclick="_hmt.push(['_trackEvent', 'navbar', 'click', 'about'])">登出</a></li>
+                    {% else %}
+                        <li><a href="{% url 'front:login' %}"
+                               onclick="_hmt.push(['_trackEvent', 'navbar', 'click', 'about'])">登录</a></li>
+                        <li><a href="{% url 'front:register' %}"
+                               onclick="_hmt.push(['_trackEvent', 'navbar', 'click', 'about'])">注册</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -80,7 +87,7 @@
             <a href="http://www.miibeian.gov.cn" target="_blank" rel="nofollow noopener">皖ICP备18017580号-2</a>
         </div>
         <div class="rt">
-                &copy;thbigdata.xyz<a href="http://www.thbigdata.xyz/">恒晨大数据管理可视化平台</a>
+            &copy;thbigdata.xyz<a href="http://www.thbigdata.xyz/">恒晨大数据管理可视化平台</a>
         </div>
     </div>
 </footer>

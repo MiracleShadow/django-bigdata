@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}
-    恒晨大数据树平台
+    主页 | 恒晨大数据平台
 {% endblock %}
 
 {% block content %}
-        <div>
-            Hi!你好 {{ username }}
-            <p>现在的时间是{{ today|date:"Y年n月j日 G:i:s" }}</p>
-            <img src="{% static 'front/image/1.jpg' %}" alt="">
-        </div>
+    {% if request.session.is_login %}
+        <h1>你好,{{ request.session.user_name }}！欢迎回来！</h1>
+    {% else %}
+        <h1>你尚未登录，只能访问公开内容！</h1>
+    {% endif %}
 {% endblock %}
