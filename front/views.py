@@ -102,8 +102,7 @@ class Page(object):
         html_str_list.append(
             '<li><a href="{url}?page={page_num}">尾页</a></li>'.format(
                 url=self.url_prefix, page_num=self.total_page))
-        page_html = "".join(html_str_list)
-        return page_html
+        return "".join(html_str_list)
 
 
 class Weather(object):
@@ -165,7 +164,7 @@ class Weather(object):
             daily_len = 0
             daily = []
 
-        context = {
+        return {
             'weather_now_api': weather_now_api,
             'now': now,
             'location': location,
@@ -176,7 +175,6 @@ class Weather(object):
             'daily_len': daily_len,
             'daily': daily,
         }
-        return context
 
 
 def index(request):
@@ -530,13 +528,15 @@ class SearchView(View):
             for i in range(len(u)):
                 u[i].DownloadDocount += 1
                 u[i].save()
-                data[i] = {}
-                data[i]['download'] = u[i].DownloadDocount
-                data[i]['filename'] = u[i].name
-                data[i]['id'] = u[i].id
-                data[i]['ip'] = str(u[i].PCIP)
-                data[i]['size'] = u[i].Filesize
-                data[i]['time'] = str(u[i].Datatime.strftime('%Y-%m-%d %H:%M:%S'))
+                data[i] = {
+                    'download': u[i].DownloadDocount,
+                    'filename': u[i].name,
+                    'id': u[i].id,
+                    'ip': str(u[i].PCIP),
+                    'size': u[i].Filesize,
+                    'time': str(u[i].Datatime.strftime('%Y-%m-%d %H:%M:%S')),
+                }
+
                 data[i]['key'] = u[i].code
         return HttpResponse(json.dumps(data), content_type="application/json")
 
